@@ -2,4 +2,6 @@
 require_relative 'lib/game'
 
 game = Game.new
-game.play
+
+game.open_file
+#game.play
