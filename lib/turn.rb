@@ -7,9 +7,9 @@ class Turn
   end
 
   def enter_character
-    print "Please enter a character : "
+    print "Please enter a character (from a - z): "
     @guess = gets.chomp
-    puts @guess
   end
+  
 
 end
