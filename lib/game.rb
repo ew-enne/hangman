@@ -8,7 +8,6 @@ class Game
     @array = []
     @array_result = []
     @array_wrong = []
-    @character_present = false
     @player_entry = ""
   end
 
@@ -22,8 +21,21 @@ class Game
     if player_choice == "y" ### start with a saved game
       load_saved_game
 
-    else ### start with a new game
-      puts
+    else
+      setup_new_game
+    end
+
+    while (@array_result.include?('-') && @countdown > 0)
+      game_loop
+    end
+    puts "You won!"
+
+  end
+
+  private
+
+  def setup_new_game
+    puts
       puts "Ok, so let's start a new game."
       @countdown = 8
 
@@ -40,11 +52,10 @@ class Game
 
       # initialize the array containing the wrong guesses
       @array_wrong = []
-    end
+  end
 
-    while (@array_result.include?('-') && @countdown > 0)
-
-      ####### option to save a game ######
+  def game_loop
+    ####### option to save a game ######
       puts
       print "Would you like to save the game (y/n)? "
       save_choice = gets.chomp
@@ -59,18 +70,13 @@ class Game
         @player_entry = turn.enter_character.downcase
 
         # checks if the entered character is present in the array
-        @character_present = @array.include?(@player_entry)        
-        check_character
+        character_present = @array.include?(@player_entry)    
+        check_character(character_present)
       end
 
       @countdown -= 1
       check_win
-    end
-    puts "You won!"
-
   end
-
-  private
   
   def random_line
     total_lines = 9694
@@ -109,8 +115,8 @@ class Game
       puts "You have #{@countdown} turns left"
   end
 
-  def check_character
-    if !@character_present
+  def check_character(character_present)
+    if !character_present
       @array_wrong << @player_entry
       puts
       puts @array_result.join
