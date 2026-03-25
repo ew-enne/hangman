@@ -11,6 +11,66 @@ class Game
     @character_present = false
     @player_entry = ""
   end
+
+  def play
+
+    ####### option to load a saved game ######
+    puts
+    print "Would you like to load a saved game (y/n)? "
+    player_choice = gets.chomp
+
+    if player_choice == "y" ### start with a saved game
+      load_saved_game
+
+    else ### start with a new game
+      puts
+      puts "Ok, so let's start a new game."
+      @countdown = 8
+
+      word = open_file.chomp
+      until (word.length > 4  && word.length < 13)
+        word = open_file.chomp
+      end
+
+      # transform the random word into an array
+      @array = word.chars
+
+      # initialize the array showing the guesses of the player
+      @array_result = Array.new(word.length) { '-' }
+
+      # initialize the array containing the wrong guesses
+      @array_wrong = []
+    end
+
+    while (@array_result.include?('-') && @countdown > 0)
+
+      ####### option to save a game ######
+      puts
+      print "Would you like to save the game (y/n)? "
+      save_choice = gets.chomp
+
+      if save_choice == "y" ### save the game
+        save_game
+
+      else ### continue the game
+        # launches a guessing turn
+        turn = Turn.new
+        puts
+        @player_entry = turn.enter_character.downcase
+
+        # checks if the entered character is present in the array
+        @character_present = @array.include?(@player_entry)        
+        check_character
+      end
+
+      @countdown -= 1
+      check_win
+    end
+    puts "You won!"
+
+  end
+
+  private
   
   def random_line
     total_lines = 9694
@@ -81,64 +141,6 @@ class Game
       puts "The secret word was: #{@array.join}"
       exit
     end
-  end
-
-  def play
-
-    ####### option to load a saved game ######
-    puts
-    print "Would you like to load a saved game (y/n)? "
-    player_choice = gets.chomp
-
-    if player_choice == "y" ### start with a saved game
-      load_saved_game
-
-    else ### start with a new game
-      puts
-      puts "Ok, so let's start a new game."
-      @countdown = 8
-
-      word = open_file.chomp
-      until (word.length > 4  && word.length < 13)
-        word = open_file.chomp
-      end
-
-      # transform the random word into an array
-      @array = word.chars
-
-      # initialize the array showing the guesses of the player
-      @array_result = Array.new(word.length) { '-' }
-
-      # initialize the array containing the wrong guesses
-      @array_wrong = []
-    end
-
-    while (@array_result.include?('-') && @countdown > 0)
-
-      ####### option to save a game ######
-      puts
-      print "Would you like to save the game (y/n)? "
-      save_choice = gets.chomp
-
-      if save_choice == "y" ### save the game
-        save_game
-
-      else ### continue the game
-        # launches a guessing turn
-        turn = Turn.new
-        puts
-        @player_entry = turn.enter_character.downcase
-
-        # checks if the entered character is present in the array
-        @character_present = @array.include?(@player_entry)        
-        check_character
-      end
-
-      @countdown -= 1
-      check_win
-    end
-    puts "You won!"
-
   end
 
 end
