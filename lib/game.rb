@@ -24,7 +24,7 @@ class Game
       setup_new_game
     end
 
-    while @countdown > 0
+    while (@countdown > 0 && @game_saved == false)
       game_loop
     end
   end
@@ -43,7 +43,7 @@ class Game
 
       # transform the random word into an array
       @array = word.chars
-      print @array ###### for debugging
+      # print @array ###### for debugging
 
       # initialize the array showing the guesses of the player
       @array_result = Array.new(word.length) { '-' }
@@ -100,7 +100,6 @@ class Game
       game_file.puts @array_wrong.join
     end
     @game_saved = true
-    @countdown = 0
   end
 
   def load_saved_game
@@ -137,20 +136,22 @@ class Game
     puts
   end
 
-  def check_win  
-    if @countdown > 0
-      if @array_result.include?('-')
-        puts "You have #{@countdown} guesses left."
-        if !@array_wrong.empty?
-          puts "Incorrect guesses: #{@array_wrong.join}"
+  def check_win
+    if @game_saved == false 
+      if @countdown > 0
+        if @array_result.include?('-')
+          puts "You have #{@countdown} guesses left."
+          if !@array_wrong.empty?
+            puts "Incorrect guesses: #{@array_wrong.join}"
+          end
+        else
+          puts "You won!"
+          @countdown = 0
         end
       else
-        puts "You won!"
-        @countdown = 0
+        puts "Game over, you don't have any guesses left!"
+        puts "The secret word was: #{@array.join}"
       end
-    else
-      puts "Game over, you don't have any guesses left!"
-      puts "The secret word was: #{@array.join}"
     end
   end
 
