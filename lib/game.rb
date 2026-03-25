@@ -9,10 +9,10 @@ class Game
     @array_result = []
     @array_wrong = []
     @player_entry = ""
+    @game_saved = false
   end
 
   def play
-
     ####### option to load a saved game ######
     puts
     print "Would you like to load a saved game (y/n)? "
@@ -20,16 +20,13 @@ class Game
 
     if player_choice == "y" ### start with a saved game
       load_saved_game
-
     else
       setup_new_game
     end
 
-    while (@array_result.include?('-') && @countdown > 0)
+    while @countdown > 0
       game_loop
     end
-    puts "You won!"
-
   end
 
   private
@@ -46,6 +43,7 @@ class Game
 
       # transform the random word into an array
       @array = word.chars
+      print @array ###### for debugging
 
       # initialize the array showing the guesses of the player
       @array_result = Array.new(word.length) { '-' }
@@ -55,7 +53,8 @@ class Game
   end
 
   def game_loop
-    ####### option to save a game ######
+    while (@array_result.include?('-') && @game_saved == false)
+      ### option to save a game ###
       puts
       print "Would you like to save the game (y/n)? "
       save_choice = gets.chomp
@@ -76,6 +75,7 @@ class Game
 
       @countdown -= 1
       check_win
+    end
   end
   
   def random_line
@@ -93,13 +93,14 @@ class Game
 
   def save_game
     puts
-        File.open("game.txt", "w") do |game_file|
-          game_file.puts @countdown.to_s
-          game_file.puts @array.join
-          game_file.puts @array_result.join
-          game_file.puts @array_wrong.join
-        end
-        exit
+    File.open("game.txt", "w") do |game_file|
+      game_file.puts @countdown.to_s
+      game_file.puts @array.join
+      game_file.puts @array_result.join
+      game_file.puts @array_wrong.join
+    end
+    @game_saved = true
+    @countdown = 0
   end
 
   def load_saved_game
@@ -116,7 +117,7 @@ class Game
   end
 
   def check_character(character_present)
-    if !character_present
+    unless character_present
       @array_wrong << @player_entry
       puts
       puts @array_result.join
@@ -136,16 +137,20 @@ class Game
     puts
   end
 
-  def check_win
+  def check_win  
     if @countdown > 0
-      puts "You have #{@countdown} guesses left."
-      if !@array_wrong.empty?
-        puts "Incorrect guesses: #{@array_wrong.join}"
+      if @array_result.include?('-')
+        puts "You have #{@countdown} guesses left."
+        if !@array_wrong.empty?
+          puts "Incorrect guesses: #{@array_wrong.join}"
+        end
+      else
+        puts "You won!"
+        @countdown = 0
       end
     else
       puts "Game over, you don't have any guesses left!"
       puts "The secret word was: #{@array.join}"
-      exit
     end
   end
 
